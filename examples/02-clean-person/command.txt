@@ -1,0 +1,7 @@
+$natural-narration MODE B CLEAN：把 input.md 改成自然的人物口播。只改表达，不改年份、奖项、合作归属和「第一位」的范围；删除绝对化承诺，不补人物心理活动。
+
+复查（在仓库根目录）：
+python scripts/nn_scan.py --baseline examples/02-clean-person/input.md --after examples/02-clean-person/output.md --fidelity-gate
+python scripts/nn_structure_check.py examples/02-clean-person/input.md examples/02-clean-person/output.md
+
+运行结果：`--fidelity-gate` PASS，Semantic Fidelity 10，Critical Issues 0；`nn_structure_check.py` PASS。脚本结果仍须结合 notes.md 的逐项人工语义比对。

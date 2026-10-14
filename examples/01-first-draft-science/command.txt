@@ -1,0 +1,7 @@
+$natural-narration MODE A WRITE：根据 input.md 写一篇 1–2 分钟的科普口播。围绕擦干后又出现水珠的冰水杯推进，只用给定事实，保留出现水珠的条件；输出成稿。
+
+复查（在仓库根目录）：
+python scripts/nn_scan.py examples/01-first-draft-science/output.md
+python scripts/nn_blueprint_check.py examples/01-first-draft-science/output.md --thread 杯子,杯壁,空气,水珠 --topic 凝结
+
+运行结果：`nn_scan.py` Naturalness 9、Cliché Risk 0、AI Pattern Risk 1；`nn_blueprint_check.py` 90 / LOW。结构分只提示风险，不是 v0.9.0 的交付门槛。

@@ -1,0 +1,7 @@
+$natural-narration MODE B CLEAN：检查 input.md 的正文。若发现主问题断线或资料并列，停止换词；原文原样保留，并按 references/structure-handoff.md 列出段落位置、原因和交回编剧的问题。
+
+复查（在仓库根目录）：
+python scripts/nn_blueprint_check.py examples/04-structure-stop/input.md --thread 路面,雨水,蒸发 --topic 路面,变干
+python scripts/nn_structure_check.py examples/04-structure-stop/input.md examples/04-structure-stop/output.md
+
+运行结果：`nn_blueprint_check.py` 38 / HIGH；`nn_structure_check.py` PASS。结构脚本只提供风险线索；停止判断以正文段落关系为准。

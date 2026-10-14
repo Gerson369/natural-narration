@@ -1,109 +1,102 @@
-# natural-narration v0.9.0
+<div align="center">
 
-中文口播 / 知识类 / 科普 / 人物 / 方法论 / 哲学 / 纪录片式文稿的**去 AI 味写作 Skill**。不是禁词表，而是语义判断 + 句法判断 + 节奏判断 + 故事层判断 + 价值与清晰度判断 + 全文重复模式检测。
+# Natural Narration
 
-v0.9.0 做减法：结构硬门槛（结构分 ≥ 85）改为风险诊断；CLEAN 加停止条件，发现结构问题交回编剧；取消全文统一句法配额，按作用判断；新增听觉理解检查与修改原则（吸收 Humanizer-zh）；明确编剧 / 口播 / 事实研究三方分工。
+**让中文口播像一个懂行的人，顺着事实自然讲下去。**
 
-v0.8.1 在 v0.8.0 基础上修复主线漏洞（主线不能是题目本身），并新增揭底节拍门禁。
+写稿 · 改稿 · 审稿　｜　v0.9.0　｜　纯文字 Skill
 
-v0.8.0 主题是 First Draft Ready：新选题第一稿就能直接用。WRITE 先搭首稿蓝图（一个主问题、一条连续的线），交稿前自审循环（结构分 ≥ 85 才交）；新增 `scripts/nn_blueprint_check.py`、好句保护 `--protect`，修正“已经 + 时长”误报。
+</div>
 
-v0.7.0 主题是 Copy Only：回到纯文案处理。只写稿、改稿、审稿，交付物只有文案本身；v0.6.x 的视频导出（`nn_video_export.py`、script.txt）已移除，不再负责交接给其他工具。
+写知识、科普、人物或方法论口播时，它先看事实和原意，再处理句子、节奏与听感。通顺的句子可以不改；结构断了，就指出位置，交回编剧。
 
-v0.5.0 主题是 Fidelity Layer：先锁定原意，再优化表达。新增第七层语义保真层（否定、确定程度、状态、条件、范围、归因、因果）与 `--fidelity-gate`；No-op Rule 与 `--noop-gate`；AUTHOR_MATCH 作者声音；四类文体路由；FILE MODE 与 `scripts/nn_structure_check.py`。
+![同一段人物稿的改前与改后对比](assets/before-after.png)
 
-v0.4.0 新增证据驱动叙事：Evidence Arc、Present-day Echo、冷静纪录片人格与 `--evidence-gate`，避免资料堆砌和跨时代类比越界。
+> **Before**：「改写人类科学史的传奇」「只要坚持，就一定能创造奇迹。」<br>
+> **After**：从 1891 年求学、1903 年研究与获奖讲起，交代具体经历。<br>
+> 改动的是表达；年份、人物关系和奖项不变。<br>
+> 完整原稿与改稿见 [02｜人物 CLEAN](examples/02-clean-person/)。
 
-v0.3.0 解决的是另一类 AI 味：句子很自然、听着很有道理，但什么都没交付。新增第五层「价值与清晰度层」：价值链六问、空泛价值句与伪实用建议检测、Value Strength 评分与 `--value-gate`，以及三种可选人格模式。
+## What it does｜能做什么
 
-v0.2.0 新增两件事：把「只在解释」的稿子推向「正在发生」的故事层，以及对讲师型说服腔、绝对化承诺、身份优越感的零容忍检测。
+| 工作 | 交付 |
+| --- | --- |
+| **写稿 WRITE** | 从选题和可信事实出发，写一篇能直接朗读的中文稿。 |
+| **改稿 CLEAN** | 去掉套话和说服腔，保留原意、数字、条件和作者语气。 |
+| **审稿 REVIEW** | 指出听不懂、重复、失真或证据不足的位置。 |
 
-## 安装
+## What it does NOT do｜不做什么
+
+- 不生成视频、配音、字幕工程或卡片。
+- 不补造数字、人物经历和因果。疑点单列「事实待核」。
+- 发现主问题断线或资料堆砌时，只诊断具体段落并交回编剧，不靠反复换词掩盖结构问题。
+
+## Core checks｜每次必查五项
+
+1. **语义保真**：否定、确定程度、状态、条件、范围、归因和因果不被改坏。
+2. **无收益不改**：一句话已经通顺准确，就原样保留。
+3. **听觉理解**：朗读时能跟上指代、数字、长句和专有名词。
+4. **作者语气**：保留必要的态度、幽默和犹豫。
+5. **不补造**：不为生动而编造事实或现场。
+
+## Install｜安装
+
+仓库根目录就是 Skill。克隆到技能目录即可：
 
 ```bash
 mkdir -p ~/.agents/skills
 git clone https://github.com/Gerson369/natural-narration.git ~/.agents/skills/natural-narration
 ```
 
-安装后路径：`~/.agents/skills/natural-narration/SKILL.md`
+入口文件是 `~/.agents/skills/natural-narration/SKILL.md`。脚本只用 Python 标准库。
 
-脚本仅使用 Python 标准库。项目以 [MIT 协议](LICENSE)开源。
+## Usage｜直接调用
 
-## 调用
+```text
+$natural-narration 写一篇 1 分钟科普口播：冰水杯外面的水珠从哪里来？只用我给的事实，不补数字。
 
-- 显式：`$natural-narration 把这篇口播稿去 AI 味`
-- 隐式：说「去 AI 味 / 自然一点 / 真人一点 / 不要陈词滥调 / 不要营销号腔 / 太像讲课 / 没有故事感 / 全是大道理 / 听完不知道能干什么」
-- 两个模式：MODE A WRITE（从零写）、MODE B CLEAN（清洗现有稿）
+$natural-narration CLEAN 这篇人物口播：去掉套话，保留年份、归因和确定程度；通顺的句子不要改。
 
-## 七层检测（第七层语义保真层见 `references/semantic-fidelity.md`）
-
-| 层 | 解决什么 | 关键文件 |
-| --- | --- | --- |
-| 词汇层 | A–H 八类陈词滥调与说服腔 | `references/anti-cliche-patterns.md` |
-| 句法层 | 十一类结构重复模式 | `references/syntax-pattern-detection.md` |
-| 节奏层 | 句长分布、连续高潮句、字幕行 | `references/rhythm-rules.md` |
-| 故事层 | 主体 / 场景 / 状态变化 / 发现路径 / 视角 | `references/story-engine.md` |
-| 价值与清晰度层 | 价值链六问 / 空泛价值句 / 伪实用建议 / 清晰度 | `references/value-chain.md`、`references/clarity-engine.md` |
-| 证据与类比边界层 | Evidence Arc / 现实回声 / 类比边界 | `references/evidence-led-narration.md`、`references/present-day-echo.md` |
-
-## 结构
-
-```
-natural-narration/
-├─ SKILL.md                       主文件（精简，常驻规则）
-├─ references/
-│  ├─ anti-cliche-patterns.md     A–H 词汇层高风险库 + 配额
-│  ├─ syntax-pattern-detection.md 十一类句法结构检测
-│  ├─ natural-narration-model.md  自然推进模型与钩子来源
-│  ├─ story-engine.md             故事层五个引擎 + 具体场景路由
-│  ├─ value-chain.md              价值链六问 + 不合格的价值句
-│  ├─ clarity-engine.md           清晰度五项检查 + 硬指标
-│  ├─ practical-value-router.md   哪些题材必须给可执行内容
-│  ├─ voice-profiles.md           四种可选人格模式
-│  ├─ evidence-led-narration.md   Evidence Arc + Evidence Gate
-│  ├─ present-day-echo.md         现实回声与类比边界
-│  ├─ critical-documentary.md     冷静纪录片人格
-│  ├─ expression-assets.md        表达资产五类（不做金句库）
-│  ├─ audience-problem-scene.md   写前五问 + 讲清楚测试 + 发布后复盘
-│  ├─ rhythm-rules.md             节奏与字幕行规则
-│  ├─ anti-overcorrection.md      防过度清洗 + 防编造
-│  ├─ scan-and-scoring.md         18 项扫描 + 八项评分门禁
-│  ├─ before-after-examples.md    BEFORE / AFTER 对照
-│  ├─ failure-modes.md            失败模式与修复动作
-│  ├─ workflow.md                 两个模式的完整流程
-│  └─ quality-checklist.md        交稿前清单
-├─ templates/                     输出模板（WRITE / CLEAN / SCAN）
-├─ scripts/
-│  ├─ nn_scan.py                  硬指标检测器（词汇 / 结构 / 节奏 / 故事 / 价值 / 评分）
-│  └─ quick_validate.py           Skill 包结构与能力落地校验
-├─ tests/
-│  ├─ test-cases.md               16 组基础 / 压力 / 价值层测试
-│  ├─ baseline-red/               RED 基线稿（无 Skill 时的 AI 味）
-│  ├─ after-green/                GREEN 稿（开启 Skill 后）
-│  ├─ clean-source/               洗稿对照原稿（信息保留基准）
-│  └─ RESULTS.md                  RED / GREEN / REFACTOR 完整证据
-├─ agents/openai.yaml
-├─ VERSION.md
-└─ CHANGELOG.md
+$natural-narration 审这篇稿：标出听觉理解问题、事实待核项；若结构断线，只给段落位置和原因。
 ```
 
-## 与其他 Skill 的分工
+## Tools｜包内工具
 
-| 需求 | 用哪个 |
+| 脚本 | 用途 |
 | --- | --- |
-| 中文口播 / 科普 / 短视频稿去模板化 | **natural-narration** |
-| 小说 / 网文文学精修、长篇连贯性 | anti-ai-flavor-editor |
-| 事实核查 | 可信内容核查工作流 |
+| `scripts/quick_validate.py .` | 检查技能文件、引用和包内约束。 |
+| `scripts/nn_scan.py 稿件.md` | 给出语言、节奏和重复模式的复查线索。 |
+| `scripts/nn_scan.py --baseline 原稿.md --after 改稿.md --fidelity-gate` | 检查 CLEAN 的语义锚点；通过后仍需人工核对。 |
+| `scripts/nn_scan.py --baseline 原稿.md --after 改稿.md --noop-gate` | 检查原稿已经通顺时是否被过度改动。 |
+| `scripts/nn_blueprint_check.py 稿件.md --thread 杯壁,空气 --topic 凝结` | 提示主线和结构风险；结构分不是交稿门槛。 |
+| `scripts/nn_structure_check.py 原稿.md 改稿.md` | 检查 Markdown 的受保护结构是否保留。 |
 
-## 硬指标自检
+命令中的 `稿件.md`、`原稿.md` 等是示例路径。脚本参数以各自的 `--help` 为准。
 
-```bash
-python3 scripts/nn_scan.py 你的稿.txt
-python3 scripts/nn_scan.py 你的稿.txt --story-gate
-python3 scripts/nn_scan.py 你的稿.txt --value-gate
-python3 scripts/nn_scan.py 你的稿.txt --evidence-gate
-python3 scripts/nn_scan.py after.txt --baseline before.txt --after after.txt
-python3 scripts/quick_validate.py .
-```
+## Examples｜四种处理结果
 
-PASS 条件：Naturalness ≥ 8、Cliché Risk ≤ 2、AI Pattern Risk ≤ 2、Information Preservation ≥ 9、Clarity ≥ 8、说服腔命中 = 0；加 `--story-gate` 时额外要求 Story Strength ≥ 6；加 `--value-gate` 时额外要求 Value Strength ≥ 6、空泛价值句 = 0、伪实用动作 ≤ 1；加 `--evidence-gate` 时额外要求 Evidence Strength ≥ 6、类比越界 = 0。
+每个案例都有 `input.md`、`output.md`、`notes.md` 和 `command.txt`。文字均为原创；人物与科普案例在注释里列出事实来源。
+
+| 案例 | 看点 |
+| --- | --- |
+| [01｜科普首稿](examples/01-first-draft-science/) | 一只冰水杯，从观察水珠走到凝结的解释。 |
+| [02｜人物 CLEAN](examples/02-clean-person/) | 居里夫人稿：去掉传奇腔，保留年份、合作与奖项。 |
+| [03｜方法论 No-op](examples/03-noop-method/) | 原稿已通顺，结果逐字不变。 |
+| [04｜结构停止](examples/04-structure-stop/) | 原稿资料并列，保留原文并指出断线段落。 |
+
+<p align="center">
+  <a href="examples/01-first-draft-science/"><img src="assets/example-01.png" alt="科普首稿案例" width="48%"></a>
+  <a href="examples/02-clean-person/"><img src="assets/example-02.png" alt="人物 CLEAN 案例" width="48%"></a>
+  <a href="examples/03-noop-method/"><img src="assets/example-03.png" alt="方法论 No-op 案例" width="48%"></a>
+  <a href="examples/04-structure-stop/"><img src="assets/example-04.png" alt="结构停止案例" width="48%"></a>
+</p>
+
+![写稿、改稿、审稿和结构停止的路径](assets/workflow.png)
+
+## Changelog｜更新记录
+
+当前版本是 v0.9.0。结构检查改为风险诊断；CLEAN 遇到结构问题会停止；新增听觉理解和无收益不改的检查。完整变更见 [CHANGELOG.md](CHANGELOG.md)，版本说明见 [VERSION.md](VERSION.md)。
+
+## License｜开源说明
+
+本项目按 [MIT License](LICENSE) 开源。使用、修改和再发布时，请保留版权及协议声明。

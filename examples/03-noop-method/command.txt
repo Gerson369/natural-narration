@@ -1,0 +1,7 @@
+$natural-narration MODE B CLEAN：检查 input.md 的正文是否需要改。若每处修改都没有明确收益，就原样输出；保留「不是保证」和「如果任务本身还没说清楚」的边界。
+
+复查（在仓库根目录）：
+python scripts/nn_scan.py --baseline examples/03-noop-method/input.md --after examples/03-noop-method/output.md --noop-gate
+python scripts/nn_structure_check.py examples/03-noop-method/input.md examples/03-noop-method/output.md
+
+运行结果：`--noop-gate` PASS，Change Ratio 0.0；`nn_structure_check.py` PASS。No-op 核对范围是 `input.md` 和 `output.md` 全文。
